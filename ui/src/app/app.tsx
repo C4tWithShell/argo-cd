@@ -8,6 +8,7 @@ import {Subscription} from 'rxjs';
 import applications from './applications';
 import help from './help';
 import login from './login';
+import projects from './projects';
 import settings from './settings';
 import {Layout, ThemeWrapper} from './shared/components/layout/layout';
 import {Page} from './shared/components/page/page';
@@ -34,6 +35,7 @@ const routes: Routes = {
     '/applications': {component: applications.component},
     // TODO: Uncomment when ApplicationSet details page is fully implemented
     // '/applicationsets': {component: applications.component},
+    '/projects': {component: projects.component},
     '/settings': {component: settings.component},
     '/user-info': {component: userInfo.component},
     '/help': {component: help.component}
@@ -52,6 +54,12 @@ const navItems: NavItem[] = [
         tooltip: 'Manage your applications, and diagnose health problems.',
         path: '/applications',
         iconClassName: 'argo-icon argo-icon-application'
+    },
+    {
+        title: 'Projects',
+        tooltip: 'Browse projects, their ApplicationSets and Applications.',
+        path: '/projects',
+        iconClassName: 'fa fa-object-group'
     },
     {
         title: 'Settings',

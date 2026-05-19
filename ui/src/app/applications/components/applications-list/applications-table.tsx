@@ -16,6 +16,8 @@ export const ApplicationsTable = (props: {
     syncApplication: (appName: string, appNamespace: string) => any;
     refreshApplication: (appName: string, appNamespace: string) => any;
     deleteApplication: (appName: string, appNamespace: string) => any;
+    // getAppSetUrl optionally overrides the navigation target for ApplicationSet rows.
+    getAppSetUrl?: (appSet: models.ApplicationSet) => string;
 }) => {
     const [selectedApp, navApp, reset] = useNav(props.applications.length);
     const ctxh = React.useContext(Context);
@@ -61,7 +63,14 @@ export const ApplicationsTable = (props: {
                                         deleteApplication={props.deleteApplication}
                                     />
                                 ) : (
-                                    <AppSetTableRow key={AppUtils.appInstanceName(app)} appSet={app as models.ApplicationSet} selected={selectedApp === i} pref={pref} ctx={ctx} />
+                                    <AppSetTableRow
+                                        key={AppUtils.appInstanceName(app)}
+                                        appSet={app as models.ApplicationSet}
+                                        selected={selectedApp === i}
+                                        pref={pref}
+                                        ctx={ctx}
+                                        getAppSetUrl={props.getAppSetUrl}
+                                    />
                                 )
                             )}
                         </div>

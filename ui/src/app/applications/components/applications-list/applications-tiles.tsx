@@ -16,6 +16,8 @@ export interface ApplicationTilesProps {
     syncApplication: (appName: string, appNamespace: string) => any;
     refreshApplication: (appName: string, appNamespace: string) => any;
     deleteApplication: (appName: string, appNamespace: string) => any;
+    // getAppSetUrl optionally overrides the navigation target for ApplicationSet tiles.
+    getAppSetUrl?: (appSet: models.ApplicationSet) => string;
 }
 
 const useItemsPerContainer = (itemRef: any, containerRef: any): number => {
@@ -45,7 +47,7 @@ const useItemsPerContainer = (itemRef: any, containerRef: any): number => {
     return itemsPer || 1;
 };
 
-export const ApplicationTiles = ({applications, syncApplication, refreshApplication, deleteApplication}: ApplicationTilesProps) => {
+export const ApplicationTiles = ({applications, syncApplication, refreshApplication, deleteApplication, getAppSetUrl}: ApplicationTilesProps) => {
     const [selectedApp, navApp, reset] = useNav(applications.length);
 
     const ctxh = React.useContext(Context);
@@ -124,6 +126,7 @@ export const ApplicationTiles = ({applications, syncApplication, refreshApplicat
                                         pref={pref}
                                         ctx={ctx}
                                         tileRef={i === 0 ? firstTileRef : undefined}
+                                        getAppSetUrl={getAppSetUrl}
                                     />
                                 )
                             )}

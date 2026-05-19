@@ -14,14 +14,17 @@ export interface AppSetTileProps {
     pref: ViewPreferences;
     ctx: ContextApis;
     tileRef?: React.RefObject<HTMLDivElement>;
+    // getAppSetUrl optionally overrides the navigation target when the tile is clicked.
+    getAppSetUrl?: (appSet: models.ApplicationSet) => string;
 }
 
-export const AppSetTile = ({appSet, selected, pref, ctx, tileRef}: AppSetTileProps) => {
+export const AppSetTile = ({appSet, selected, pref, ctx, tileRef, getAppSetUrl}: AppSetTileProps) => {
     const useAuthSettingsCtx = React.useContext(AuthSettingsCtx);
     const favList = pref.appList.favoritesAppList || [];
 
     const linkInfo = getApplicationLinkURL(appSet, ctx.baseHref);
     const healthStatus = getAppSetHealthStatus(appSet);
+    const appSetUrl = getAppSetUrl ? getAppSetUrl(appSet) : `/${AppUtils.getAppUrl(appSet)}`;
 
     const handleFavoriteToggle = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -38,7 +41,7 @@ export const AppSetTile = ({appSet, selected, pref, ctx, tileRef}: AppSetTilePro
         if (linkInfo.isExternal) {
             window.open(linkInfo.url, '_blank', 'noopener,noreferrer');
         } else {
-            ctx.navigation.goto(`/${AppUtils.getAppUrl(appSet)}`);
+            ctx.navigation.goto(appSetUrl);
         }
     };
 
@@ -46,7 +49,7 @@ export const AppSetTile = ({appSet, selected, pref, ctx, tileRef}: AppSetTilePro
         <div
             ref={tileRef}
             className={`argo-table-list__row applications-list__entry applications-list__entry--health-${healthStatus} ${selected ? 'applications-tiles__selected' : ''}`}>
-            <div className='row applications-tiles__wrapper' onClick={e => ctx.navigation.goto(`/${AppUtils.getAppUrl(appSet)}`, {view: pref.appDetails.view}, {event: e})}>
+            <div className='row applications-tiles__wrapper' onClick={e => ctx.navigation.goto(appSetUrl, {view: pref.appDetails.view}, {event: e})}>
                 <div className={`columns small-12 applications-list__info qe-applications-list-${AppUtils.appInstanceName(appSet)} applications-tiles__item`}>
                     {/* Header row with icon, title, and action buttons */}
                     <div className='row'>

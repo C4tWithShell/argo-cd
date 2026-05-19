@@ -13,12 +13,15 @@ export interface AppSetTableRowProps {
     selected: boolean;
     pref: ViewPreferences;
     ctx: ContextApis;
+    // getAppSetUrl optionally overrides the navigation target when the row is clicked.
+    getAppSetUrl?: (appSet: models.ApplicationSet) => string;
 }
 
-export const AppSetTableRow = ({appSet, selected, pref, ctx}: AppSetTableRowProps) => {
+export const AppSetTableRow = ({appSet, selected, pref, ctx, getAppSetUrl}: AppSetTableRowProps) => {
     const favList = pref.appList.favoritesAppList || [];
     const healthStatus = getAppSetHealthStatus(appSet);
     const linkInfo = getApplicationLinkURL(appSet, ctx.baseHref);
+    const appSetUrl = getAppSetUrl ? getAppSetUrl(appSet) : `/${AppUtils.getAppUrl(appSet)}`;
 
     const handleFavoriteToggle = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -35,13 +38,13 @@ export const AppSetTableRow = ({appSet, selected, pref, ctx}: AppSetTableRowProp
         if (linkInfo.isExternal) {
             window.open(linkInfo.url, '_blank', 'noopener,noreferrer');
         } else {
-            ctx.navigation.goto(`/${AppUtils.getAppUrl(appSet)}`);
+            ctx.navigation.goto(appSetUrl);
         }
     };
 
     return (
         <div className={`argo-table-list__row applications-list__entry applications-list__entry--health-${healthStatus} ${selected ? 'applications-tiles__selected' : ''}`}>
-            <div className='row applications-list__table-row' onClick={e => ctx.navigation.goto(`/${AppUtils.getAppUrl(appSet)}`, {}, {event: e})}>
+            <div className='row applications-list__table-row' onClick={e => ctx.navigation.goto(appSetUrl, {}, {event: e})}>
                 {/* First column: Favorite, Kind, Name */}
                 <div className='columns small-4'>
                     <div className='row'>
