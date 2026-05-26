@@ -50,16 +50,16 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     {
+        title: 'Projects',
+        tooltip: 'Browse projects, ApplicationSets, and applications.',
+        path: '/projects',
+        iconClassName: 'fa fa-object-group'
+    },
+    {
         title: 'Applications',
         tooltip: 'Manage your applications, and diagnose health problems.',
         path: '/applications',
         iconClassName: 'argo-icon argo-icon-application'
-    },
-    {
-        title: 'Projects',
-        tooltip: 'Browse projects, their ApplicationSets and Applications.',
-        path: '/projects',
-        iconClassName: 'fa fa-object-group'
     },
     {
         title: 'Settings',

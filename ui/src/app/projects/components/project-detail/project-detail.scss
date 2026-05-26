@@ -1,0 +1,205 @@
+@import 'node_modules/argo-ui/src/styles/config';
+@import 'node_modules/argo-ui/src/styles/theme';
+
+.project-detail {
+    padding: 1em;
+    min-height: 88vh;
+
+    &__section {
+        margin-bottom: 2em;
+    }
+
+    &__section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 1em;
+        padding: 0 0.5em;
+        @include themify($themes) {
+            color: themed('text-1');
+        }
+
+        i {
+            margin-right: 6px;
+        }
+    }
+
+    &__appset-group {
+        margin-bottom: 1em;
+    }
+
+    &__appset-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0.8em 1em;
+        cursor: pointer;
+        border-radius: 4px;
+        @include themify($themes) {
+            background: themed('background-2');
+        }
+
+        &:hover {
+            @include themify($themes) {
+                background: themed('background-3');
+            }
+        }
+
+        &__chevron {
+            font-size: 12px;
+            width: 16px;
+            @include themify($themes) {
+                color: themed('text-2');
+            }
+        }
+
+        &__name {
+            font-weight: 600;
+            font-size: 15px;
+            @include themify($themes) {
+                color: themed('text-1');
+            }
+        }
+
+        &__count {
+            font-size: 13px;
+            margin-left: auto;
+            @include themify($themes) {
+                color: themed('text-2');
+            }
+        }
+    }
+
+    &__apps-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        padding: 0 4px;
+
+        &--nested {
+            margin-top: 12px;
+            margin-left: 26px;
+        }
+    }
+
+    &__app-card {
+        cursor: pointer;
+        padding: 1em 1.2em !important;
+        border-left: 4px solid $argo-color-gray-4;
+        transition: box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        &:hover {
+            box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        &--health-healthy {
+            border-left-color: $argo-success-color;
+        }
+        &--health-progressing {
+            border-left-color: $argo-running-color;
+        }
+        &--health-degraded {
+            border-left-color: $argo-failed-color;
+        }
+        &--health-suspended {
+            border-left-color: $argo-suspended-color;
+        }
+        &--health-missing {
+            border-left-color: $argo-color-gray-6;
+        }
+        &--health-unknown {
+            border-left-color: $argo-color-gray-4;
+        }
+
+        &__header {
+            display: flex;
+            align-items: center;
+        }
+
+        &__name {
+            font-weight: 600;
+            font-size: 14px;
+            @include themify($themes) {
+                color: themed('text-1');
+            }
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__status {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+        }
+
+        &__dest {
+            font-size: 12px;
+            @include themify($themes) {
+                color: themed('text-2');
+            }
+            i {
+                margin-right: 4px;
+            }
+        }
+    }
+
+    &__no-apps {
+        padding: 1em;
+        font-style: italic;
+        @include themify($themes) {
+            color: themed('text-2');
+        }
+    }
+
+    // Health badges
+    &__health-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        i {
+            font-size: 12px;
+        }
+    }
+
+    &__health-healthy {
+        color: $argo-success-color;
+    }
+    &__health-progressing {
+        color: $argo-running-color;
+    }
+    &__health-degraded {
+        color: $argo-failed-color;
+    }
+    &__health-suspended {
+        color: $argo-suspended-color;
+    }
+    &__health-missing {
+        color: $argo-color-gray-6;
+    }
+    &__health-unknown {
+        color: $argo-color-gray-5;
+    }
+
+    // Sync badges
+    &__sync-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        i {
+            font-size: 12px;
+        }
+    }
+
+    &__sync-synced {
+        color: $argo-success-color;
+    }
+    &__sync-outofsync {
+        color: $argo-running-color;
+    }
+    &__sync-unknown {
+        color: $argo-color-gray-5;
+    }
+}
