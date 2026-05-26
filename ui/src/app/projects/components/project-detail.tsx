@@ -26,7 +26,7 @@ export const ProjectDetail = (props: RouteComponentProps<{name: string}>) => {
                         const apps = (appList.items || []) as models.Application[];
                         const appSets = (appSetList.items || []) as models.ApplicationSet[];
                         const projectAppSets = appSetsInProject(apps, appSets, projectName);
-                        const projectStandaloneApps = standaloneApps(appsInProject(apps, projectName));
+                        const projectStandaloneApps = standaloneApps(appsInProject(apps, projectName), appSets);
                         const items: models.AbstractApplication[] = [...projectAppSets, ...projectStandaloneApps];
                         return (
                             <ProjectAppList
