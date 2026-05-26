@@ -94,17 +94,15 @@ export const ProjectDetail = (props: RouteComponentProps<{projectName: string}>)
                 <DataLoader
                     load={async () => {
                         const [apps, appSets] = await Promise.all([
-                            services.applications.list([projectName], 'application', {
-                                fields: [
-                                    'items.metadata.name',
-                                    'items.metadata.namespace',
-                                    'items.spec',
-                                    'items.status.health',
-                                    'items.status.sync.status',
-                                    'items.status.operationState.phase',
-                                    'items.status.summary'
-                                ]
-                            }),
+                            // Intentionally omit `fields` for the application list:
+                            // the server-side field allowlist
+                            // (pkg/apiclient/application/forwarder_overwrite.go appFields)
+                            // does not include `metadata.ownerReferences`, so requesting
+                            // it via `fields=` would silently drop it. Omitting fields
+                            // returns the full Application objects and preserves
+                            // ownerReferences, which is how the AppSet controller links
+                            // generated Apps back to their AppSet.
+                            services.applications.list([projectName], 'application'),
                             services.applications.list([], 'applicationset', {
                                 fields: [
                                     'items.metadata.name',
@@ -142,23 +140,47 @@ export const ProjectDetail = (props: RouteComponentProps<{projectName: string}>)
                             return false;
                         });
 
-                        // Group apps by AppSet using the AppSet's own status as the
-                        // authoritative signal (ownerReferences are stripped by the
-                        // Application list endpoint's field allowlist).
+                        // Group apps by AppSet. Two independent signals are combined
+                        // for robustness:
+                        //   1. app.metadata.ownerReferences — written by the AppSet
+                        //      controller; the primary signal in most clusters.
+                        //   2. appSet.status.resources / status.applicationStatus —
+                        //      written by the AppSet controller into its own status;
+                        //      useful when ownerReferences are absent.
                         const appsByAppSet = new Map<string, models.Application[]>();
                         const appByName = new Map(allApps.map(a => [a.metadata.name || '', a]));
                         const claimedAppNames = new Set<string>();
+                        const projectAppSetNames = new Set(projectAppSets.map(as => as.metadata.name || ''));
 
                         projectAppSets.forEach(appSet => {
-                            const owned: models.Application[] = [];
+                            appsByAppSet.set(appSet.metadata.name || '', []);
+                        });
+
+                        const addAppToAppSet = (appSetName: string, app: models.Application) => {
+                            const list = appsByAppSet.get(appSetName);
+                            if (!list || list.some(existing => existing.metadata.name === app.metadata.name)) {
+                                return;
+                            }
+                            list.push(app);
+                            claimedAppNames.add(app.metadata.name || '');
+                        };
+
+                        // Signal 1: ownerReferences on each Application.
+                        allApps.forEach(app => {
+                            const ownerRef = (app.metadata.ownerReferences || []).find(r => r.kind === 'ApplicationSet');
+                            if (ownerRef && projectAppSetNames.has(ownerRef.name)) {
+                                addAppToAppSet(ownerRef.name, app);
+                            }
+                        });
+
+                        // Signal 2: the AppSet's own status records the apps it generated.
+                        projectAppSets.forEach(appSet => {
                             getAppSetGeneratedAppNames(appSet).forEach(name => {
                                 const app = appByName.get(name);
                                 if (app) {
-                                    owned.push(app);
-                                    claimedAppNames.add(name);
+                                    addAppToAppSet(appSet.metadata.name || '', app);
                                 }
                             });
-                            appsByAppSet.set(appSet.metadata.name || '', owned);
                         });
 
                         const standaloneApps: models.Application[] = allApps.filter(app => !claimedAppNames.has(app.metadata.name || ''));
